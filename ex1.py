@@ -11,3 +11,6 @@ class Transaction:
         __ammount = value
         __merchant = merchant
         __time = datetime.datetime.now()
+
+if __name__ == '__main__':
+    pass
