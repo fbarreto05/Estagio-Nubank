@@ -1,7 +1,7 @@
 import datetime
 
 class Account:
-    def __init__(self, limit):
+    def __init__(self, limit=0):
         self.__active = True #defines if this account is active or not
         self.__availablelimit = limit #limit of this account in integer
         self.__history = [] #list of transactions
@@ -74,10 +74,11 @@ class Account:
         if self.active:
             if self.availablelimit < value:
                 print("Insufficient limit to make the transaction.")
-            transaction = Transaction(value, merchant)
-            self.history.insert(0, transaction)
-            self.availablelimit -= value
-            print("Transaction completed successfully.")
+            else:
+                transaction = Transaction(value, merchant)
+                self.history.insert(0, transaction)
+                self.availablelimit -= value
+                print("Transaction completed successfully.")
         else:
             print("This account is inactive, so it can not make transactions.")
 
@@ -85,25 +86,28 @@ class Account:
     def showtransactions(self):
         if self.history:
             for transaction in self.history:
-                print( "Ammount:", transaction.ammount, "| Merchant:", transaction.merchant, "| Time:", transaction.time.strftime("%b/%d/%Y - %I:%M:%S %p\n"))
+                print( "Amount:", transaction.amount, "| Merchant:", transaction.merchant, "| Time:", transaction.time.strftime("%b/%d/%Y - %I:%M:%S %p\n"))
+                return "printed transaction(s)"
         else:
             print("No transactions recorded.")
+            return "notransaction to print"
 
     #show account data
     def showaccount(self):
         yesno = 'Yes' if self.active else 'No'
         print("Active:", yesno)
         print("Available limit:", self.availablelimit)
+        return f'{yesno} {self.availablelimit}'
 
 class Transaction:
     def __init__(self, value, merchant):
-        self.__ammount = value #transaction value in integer
+        self.__amount = value #transaction value in integer
         self.__merchant = merchant #transaction destination merchant
         self.__time = datetime.datetime.now() #current time
 
     @property
-    def ammount(self):
-        return self.__ammount
+    def amount(self):
+        return self.__amount
     @property
     def merchant(self):
         return self.__merchant
@@ -111,9 +115,9 @@ class Transaction:
     def time(self):
         return self.__time
     
-    @ammount.setter
-    def ammount(self, value):
-        self.__ammount = value
+    @amount.setter
+    def amount(self, value):
+        self.__amount = value
     @merchant.setter
     def merchant(self, value):
         self.__merchant = value
@@ -121,9 +125,9 @@ class Transaction:
     def time(self, value):
         self.__time = value
 
-    @ammount.deleter
-    def ammount(self, value):
-        del self.__ammount
+    @amount.deleter
+    def amount(self, value):
+        del self.__amount
     @merchant.deleter
     def merchant(self, value):
         del self.__merchant
