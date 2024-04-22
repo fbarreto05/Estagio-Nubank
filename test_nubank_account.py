@@ -79,13 +79,14 @@ class TestAccount(unittest.TestCase):
         self.account.availablelimit = 2500
         self.account.history.clear()
 
-        self.account.maketransaction(500, "Merchant")
+        ret = self.account.maketransaction(500, "Merchant")
         
         transaction_mock.assert_not_called()
         self.assertEqual([], self.account.history)
         self.assertEqual([], self.account.history)
         self.assertEqual([], self.account.history)
         self.assertEqual(2500, self.account.availablelimit)
+        self.assertEqual("inactive account", ret)
 
     @patch("nubank.Transaction")
     def test_showTransactions(self, transaction_mock):
@@ -105,7 +106,7 @@ class TestAccount(unittest.TestCase):
 
         ret = self.account.showtransactions()
 
-        self.assertEqual('notransaction to print', ret)
+        self.assertEqual('no transaction to print', ret)
 
     def test_showAccount(self):
         self.account.active = True

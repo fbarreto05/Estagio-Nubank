@@ -81,6 +81,7 @@ class Account:
                 print("Transaction completed successfully.")
         else:
             print("This account is inactive, so it can not make transactions.")
+            return "inactive account"
 
     #show transactions history
     def showtransactions(self):
@@ -90,7 +91,7 @@ class Account:
                 return "printed transaction(s)"
         else:
             print("No transactions recorded.")
-            return "notransaction to print"
+            return "no transaction to print"
 
     #show account data
     def showaccount(self):
