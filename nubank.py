@@ -69,19 +69,43 @@ class Account:
         else:
             print("This account is inactive, so it can not have a limit.")
 
+    #autenticate a transatiction
+    def authtransaction(self, transaction):
+        violations = []
+        if not self.active:
+            violations.append("account-not-activate")
+        if not self.history:
+            if transaction.amount > self.availablelimit * 0.9 and transaction.amount < self.availablelimit:
+                violations.append("first-transaction-above-threshold")
+        if transaction.amount > self.availablelimit:
+            violations.append("insuffcient-limit")
+        limittime = transaction.time - datetime.timedelta(minutes=2)
+        counttime = 0
+        countequal = 0
+        for transfer in self.history:
+            if transfer.time >= limittime:
+                counttime += 1
+                if transfer.amount == transaction.amount and transfer.merchant == transaction.merchant:
+                    countequal += 1
+            else: break
+        if counttime == 3:
+            violations.append("high-frequency-small-interval")
+        if countequal == 1:
+            violations.append("doubled-transaction")
+        return violations
+
     #realizes a transaction
     def maketransaction(self, value, merchant):
-        if self.active:
-            if self.availablelimit < value:
-                print("Insufficient limit to make the transaction.")
-            else:
-                transaction = Transaction(value, merchant)
-                self.history.insert(0, transaction)
-                self.availablelimit -= value
-                print("Transaction completed successfully.")
+        transaction = Transaction(value, merchant)
+        exceptions = self.authtransaction(transaction)
+        if not exceptions:
+            self.history.insert(0, transaction)
+            self.availablelimit -= value
+            print("Transaction completed successfully.")
         else:
-            print("This account is inactive, so it can not make transactions.")
-            return "inactive account"
+            for i in exceptions:
+                print(i)
+        return transaction.time, exceptions
 
     #show transactions history
     def showtransactions(self):
