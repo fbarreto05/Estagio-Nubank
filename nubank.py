@@ -28,17 +28,6 @@ class Account:
     def history(self, value):
         self.__history = value
 
-    #deleters
-    @active.deleter
-    def active(self):
-        del self.__active
-    @availablelimit.deleter
-    def availablelimit(self):
-        del self.__availablelimit
-    @history.deleter
-    def history(self):
-        self.__history
-
     #turns the account active
     def activate(self):
         if not self.active:
@@ -67,37 +56,44 @@ class Account:
                 self.availablelimit = limit
                 print(f"The limit for this account is now R${limit}.")
         else:
-            print("This account is inactive, so it can not have a limit.")
+            print("This account is inactive, so it can't have a limit.")
 
-    #autenticate a transatiction
+    #verify if there's violations in a transaction
     def authtransaction(self, transaction):
-        violations = []
-        if not self.active:
+        violations = [] #list that will store violations of business rules
+        
+        if not self.active: #the account must be active
             violations.append("account-not-activate")
-        if not self.history:
+
+        if not self.history: #the first transaction value can't take over 90% of the available limit
             if transaction.amount > self.availablelimit * 0.9 and transaction.amount < self.availablelimit:
                 violations.append("first-transaction-above-threshold")
+        
+        #the transaction value can't be higher than the available limit
         if transaction.amount > self.availablelimit:
             violations.append("insuffcient-limit")
-        limittime = transaction.time - datetime.timedelta(minutes=2)
-        counttime = 0
-        countequal = 0
-        for transfer in self.history:
-            if transfer.time >= limittime:
+
+        limittime = transaction.time - datetime.timedelta(minutes=2) #defines a time interval
+        counttime = 0 #counts how much transactions were made in this time interval
+        countequal = 0 #counts how much equals transactions where made in this time interval
+        for transfer in self.history: #starts verifying the transactions in the interval
+            if transfer.time >= limittime: #if it's in the interval
                 counttime += 1
-                if transfer.amount == transaction.amount and transfer.merchant == transaction.merchant:
+                if transfer.amount == transaction.amount and transfer.merchant == transaction.merchant: #if it's equal the current transactios
                     countequal += 1
             else: break
-        if counttime == 3:
+
+        if counttime == 3: #the number of transactions made in the interval must not be greater than 3
             violations.append("high-frequency-small-interval")
-        if countequal == 1:
+        if countequal == 1: #there's must not have two identical transactions in the interval 
             violations.append("doubled-transaction")
         return violations
 
     #realizes a transaction
     def maketransaction(self, value, merchant):
         transaction = Transaction(value, merchant)
-        exceptions = self.authtransaction(transaction)
+        exceptions = self.authtransaction(transaction) #make the verification in the current transaction
+        #if there is no exceptions, the transaction can be done, else, it can't
         if not exceptions:
             self.history.insert(0, transaction)
             self.availablelimit -= value
@@ -107,7 +103,7 @@ class Account:
                 print(i)
         return transaction.time, exceptions
 
-    #show transactions history
+    #shows transactions history in console
     def showtransactions(self):
         if self.history:
             for transaction in self.history:
@@ -117,7 +113,7 @@ class Account:
             print("No transactions recorded.")
             return "no transaction to print"
 
-    #show account data
+    #shows account data in console
     def showaccount(self):
         yesno = 'Yes' if self.active else 'No'
         print("Active:", yesno)
@@ -149,17 +145,3 @@ class Transaction:
     @time.setter
     def time(self, value):
         self.__time = value
-
-    @amount.deleter
-    def amount(self, value):
-        del self.__amount
-    @merchant.deleter
-    def merchant(self, value):
-        del self.__merchant
-    @time.deleter
-    def time(self, value):
-        del self.__time
-
-#main()
-if __name__ == '__main__':
-    pass
