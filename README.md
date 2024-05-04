@@ -7,7 +7,7 @@
 <hr/>
 
 ## Enunciado &#x1F4C4;
-![Enunciado](exercise.png)
+![Enunciado](media/exercise.png)
 
 ## Como Usar &#x1f5a5;
 * Rode o arquivo nubank.py em seu computador por meio de um interpretador de Python 3.11.15 ou superior.
